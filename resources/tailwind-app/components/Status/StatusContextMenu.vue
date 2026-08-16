@@ -202,12 +202,6 @@ async function handleBlock() {
                         </button>
                     </li>
                     <li>
-                        <button :to="connectionsLink">
-                            <ArrowBigRightDash class="inline-block size-4" />
-                            {{ trans('status.further-connections') }}
-                        </button>
-                    </li>
-                    <li>
                         <button @click="emit('edit')">
                             <Eye class="inline-block size-4" />
                             {{ trans('edit') }}
