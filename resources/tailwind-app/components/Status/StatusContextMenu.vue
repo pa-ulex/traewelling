@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {
+    ArrowBigRightDash,
     CopyPlus,
     Eye,
     MoreVertical,
@@ -45,6 +46,19 @@ const copyTripModalOpen = ref(false);
 const isOwn = computed(() => !!userStore.user && userStore.user.id === props.status.user.id);
 
 const canCopyTrip = computed(() => isOwn.value && !!props.status.checkin.tripUuid);
+    
+const connectionsLink = computed(() => {
+    const dest = props.status.checkin.destination;
+    const arrival = getArrivalAttribute(props.status);
+    return {
+        name: 'stationboard',
+        query: {
+            stationId: dest.id,
+            stationName: dest.name,
+            when: arrival.time?.toISO() ?? undefined,
+        },
+    };
+});
 
 const showDepartureNowBtn = computed(() => {
     if (!isOwn.value) return false;
@@ -185,6 +199,12 @@ async function handleBlock() {
                         <button :disabled="busyArrivalNow" @click="arrivalNow">
                             <PlaneLanding class="inline-block size-4" />
                             {{ trans('status.arrival-now') }}
+                        </button>
+                    </li>
+                    <li>
+                        <button :to="connectionsLink">
+                            <ArrowBigRightDash class="inline-block size-4" />
+                            {{ trans('status.further-connections') }}
                         </button>
                     </li>
                     <li>
