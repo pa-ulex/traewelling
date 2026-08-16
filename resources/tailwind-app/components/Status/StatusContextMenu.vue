@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {
+    arrowBigRightDash,
     CopyPlus,
     Eye,
     MoreVertical,
@@ -18,6 +19,7 @@ import { Notyf } from 'notyf';
 import { computed, inject, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { Api, StatusResource, TripResource } from '../../../types/Api.gen';
+import { getArrivalAttribute } from '../../../vue/helpers/DateTimeHelper';
 import { useUserStore } from '../../../vue/stores/user';
 import TripCopyModal from '../Trip/TripCopyModal.vue';
 
@@ -45,6 +47,19 @@ const copyTripModalOpen = ref(false);
 const isOwn = computed(() => !!userStore.user && userStore.user.id === props.status.user.id);
 
 const canCopyTrip = computed(() => isOwn.value && !!props.status.checkin.tripUuid);
+
+const connectionsLink = computed(() => {
+    const dest = props.status.checkin.destination;
+    const arrival = getArrivalAttribute(props.status);
+    return {
+        name: 'stationboard',
+        query: {
+            stationId: dest.id,
+            stationName: dest.name,
+            when: arrival.time?.toISO() ?? undefined,
+        },
+    };
+});
 
 const showDepartureNowBtn = computed(() => {
     if (!isOwn.value) return false;
@@ -171,6 +186,12 @@ async function handleBlock() {
                     <Share2 class="inline-block size-4" />
                     {{ trans('menu.share') }}
                 </button>
+            </li>
+            <li>
+                <router-link :to="connectionsLink">
+                    <arrowBigRightDash class="inline-block size-4" />
+                    {{ trans('status.further-connections') }}
+                </router-link>
             </li>
 
             <template v-if="userStore.user">
