@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {
+    ArrowBigRightDash,
     CopyPlus,
     Eye,
     MoreVertical,
@@ -11,7 +12,6 @@ import {
     UserPlus,
     UserX,
     VolumeX,
-    ArrowBigRightDash,
 } from '@lucide/vue';
 import { trans } from 'laravel-vue-i18n';
 import { DateTime as LuxonDateTime } from 'luxon';
@@ -44,9 +44,13 @@ const busyMute = ref(false);
 const busyBlock = ref(false);
 const copyTripModalOpen = ref(false);
 
-const isOwn = computed(() => !!userStore.user && userStore.user.id === props.status.user.id);
+const isOwn = computed(
+    () => !!userStore.user && userStore.user.id === props.status.user.id,
+);
 
-const canCopyTrip = computed(() => isOwn.value && !!props.status.checkin.tripUuid);
+const canCopyTrip = computed(
+    () => isOwn.value && !!props.status.checkin.tripUuid,
+);
 
 const connectionsLink = computed(() => {
     const dest = props.status.checkin.destination;
@@ -65,20 +69,35 @@ const showDepartureNowBtn = computed(() => {
     if (!isOwn.value) return false;
     const origin = props.status.checkin.origin;
     const dest = props.status.checkin.destination;
-    const dep = LuxonDateTime.fromISO(origin.departurePlanned ?? origin.departureReal ?? '');
-    const arr = LuxonDateTime.fromISO(dest.arrivalPlanned ?? dest.arrivalReal ?? '');
+    const dep = LuxonDateTime.fromISO(
+        origin.departurePlanned ?? origin.departureReal ?? '',
+    );
+    const arr = LuxonDateTime.fromISO(
+        dest.arrivalPlanned ?? dest.arrivalReal ?? '',
+    );
     const now = LuxonDateTime.now();
-    return dep.isValid && arr.isValid && now >= dep.minus({ minutes: 60 }) && now <= arr.plus({ days: 1 });
+    return (
+        dep.isValid &&
+        arr.isValid &&
+        now >= dep.minus({ minutes: 60 }) &&
+        now <= arr.plus({ days: 1 })
+    );
 });
 
 const showArrivalNowBtn = computed(() => {
     if (!isOwn.value) return false;
     const origin = props.status.checkin.origin;
     const dest = props.status.checkin.destination;
-    const dep = LuxonDateTime.fromISO(origin.departurePlanned ?? origin.departureReal ?? '');
-    const arr = LuxonDateTime.fromISO(dest.arrivalPlanned ?? dest.arrivalReal ?? '');
+    const dep = LuxonDateTime.fromISO(
+        origin.departurePlanned ?? origin.departureReal ?? '',
+    );
+    const arr = LuxonDateTime.fromISO(
+        dest.arrivalPlanned ?? dest.arrivalReal ?? '',
+    );
     const now = LuxonDateTime.now();
-    return dep.isValid && arr.isValid && now >= dep && now <= arr.plus({ days: 1 });
+    return (
+        dep.isValid && arr.isValid && now >= dep && now <= arr.plus({ days: 1 })
+    );
 });
 
 function getNowIso(): string {
@@ -113,7 +132,8 @@ function rideAlongRoute() {
             lineName: t.lineName,
             start: t.origin.id.toString(),
             destination: t.destination.id.toString(),
-            departure: t.origin.departurePlanned ?? t.origin.departureReal ?? '',
+            departure:
+                t.origin.departurePlanned ?? t.origin.departureReal ?? '',
             originName: t.origin.name,
             destinationName: t.destination.name,
             category: t.category,
@@ -124,7 +144,10 @@ function rideAlongRoute() {
 async function departureNow() {
     busyDepartureNow.value = true;
     try {
-        const res = await api.status.updateSingleStatus({ manualDeparture: getNowIso() } as never, props.status.id);
+        const res = await api.status.updateSingleStatus(
+            { manualDeparture: getNowIso() } as never,
+            props.status.id,
+        );
         emit('status-updated', res.data.data as StatusResource);
     } finally {
         busyDepartureNow.value = false;
@@ -134,7 +157,10 @@ async function departureNow() {
 async function arrivalNow() {
     busyArrivalNow.value = true;
     try {
-        const res = await api.status.updateSingleStatus({ manualArrival: getNowIso() } as never, props.status.id);
+        const res = await api.status.updateSingleStatus(
+            { manualArrival: getNowIso() } as never,
+            props.status.id,
+        );
         emit('status-updated', res.data.data as StatusResource);
     } finally {
         busyArrivalNow.value = false;
@@ -151,7 +177,9 @@ async function handleMute() {
     busyMute.value = true;
     try {
         await api.user.createMute(props.status.user.id as unknown as number);
-        notyf?.success(trans('user.muted', { username: props.status.user.username }));
+        notyf?.success(
+            trans('user.muted', { username: props.status.user.username }),
+        );
     } catch {
         notyf?.error(trans('generic.error'));
     } finally {
@@ -163,7 +191,9 @@ async function handleBlock() {
     busyBlock.value = true;
     try {
         await api.user.createBlock(props.status.user.id.toString());
-        notyf?.success(trans('user.blocked', { username: props.status.user.username }));
+        notyf?.success(
+            trans('user.blocked', { username: props.status.user.username }),
+        );
     } catch {
         notyf?.error(trans('generic.error'));
     } finally {
@@ -174,7 +204,10 @@ async function handleBlock() {
 
 <template>
     <div class="dropdown dropdown-end">
-        <button tabindex="0" class="btn btn-ghost btn-xs btn-circle text-base-content/40">
+        <button
+            tabindex="0"
+            class="btn btn-ghost btn-xs btn-circle text-base-content/40"
+        >
             <MoreVertical class="inline-block size-4" />
         </button>
         <ul
@@ -191,7 +224,10 @@ async function handleBlock() {
             <template v-if="userStore.user">
                 <template v-if="isOwn">
                     <li v-if="showDepartureNowBtn">
-                        <button :disabled="busyDepartureNow" @click="departureNow">
+                        <button
+                            :disabled="busyDepartureNow"
+                            @click="departureNow"
+                        >
                             <PlaneTakeoff class="inline-block size-4" />
                             {{ trans('status.departure-now') }}
                         </button>
@@ -241,7 +277,11 @@ async function handleBlock() {
                         </button>
                     </li>
                     <li>
-                        <button class="text-error" :disabled="busyBlock" @click="handleBlock">
+                        <button
+                            class="text-error"
+                            :disabled="busyBlock"
+                            @click="handleBlock"
+                        >
                             <UserX class="inline-block size-4" />
                             {{ trans('user.block-tooltip') }}
                         </button>
