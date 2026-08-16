@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {
-    arrowBigRightDash,
     CopyPlus,
     Eye,
     MoreVertical,
@@ -12,6 +11,7 @@ import {
     UserPlus,
     UserX,
     VolumeX,
+    ArrowBigRightDash,
 } from '@lucide/vue';
 import { trans } from 'laravel-vue-i18n';
 import { DateTime as LuxonDateTime } from 'luxon';
@@ -187,12 +187,6 @@ async function handleBlock() {
                     {{ trans('menu.share') }}
                 </button>
             </li>
-            <li>
-                <router-link :to="connectionsLink">
-                    <arrowBigRightDash class="inline-block size-4" />
-                    {{ trans('status.further-connections') }}
-                </router-link>
-            </li>
 
             <template v-if="userStore.user">
                 <template v-if="isOwn">
@@ -206,6 +200,12 @@ async function handleBlock() {
                         <button :disabled="busyArrivalNow" @click="arrivalNow">
                             <PlaneLanding class="inline-block size-4" />
                             {{ trans('status.arrival-now') }}
+                        </button>
+                    </li>
+                    <li>
+                        <button :to="connectionsLink">
+                            <ArrowBigRightDash class="inline-block size-4" />
+                            {{ trans('status.further-connections') }}
                         </button>
                     </li>
                     <li>
